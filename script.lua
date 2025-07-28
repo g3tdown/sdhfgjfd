@@ -1,20 +1,18 @@
 local oldGui = game.CoreGui:FindFirstChild("CheatMenu")
 if oldGui then oldGui:Destroy() end
 
-
 local gui = Instance.new("ScreenGui")
 gui.Name = "CheatMenu"
 gui.ResetOnSpawn = false
 gui.Parent = game.CoreGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 470) -- увеличил высоту под новую кнопку
-frame.Position = UDim2.new(0.5, -150, 0.5, -235)
+frame.Size = UDim2.new(0, 300, 0, 450)
+frame.Position = UDim2.new(0.5, -150, 0.5, -225)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
-frame.ClipsDescendants = false
 frame.Parent = gui
 
 local titleBar = Instance.new("TextLabel")
@@ -47,7 +45,7 @@ local RunService = game:GetService("RunService")
 
 local result = Instance.new("TextLabel")
 result.Size = UDim2.new(1, -40, 0, 30)
-result.Position = UDim2.new(0, 20, 0, 430)
+result.Position = UDim2.new(0, 20, 0, 410)
 result.Text = ""
 result.TextColor3 = Color3.new(1, 1, 1)
 result.BackgroundTransparency = 1
@@ -56,6 +54,7 @@ result.TextSize = 18
 result.TextXAlignment = Enum.TextXAlignment.Left
 result.Parent = frame
 
+-- Создаем кнопки с позициями и цветами
 local btnFly = createButton("Fly", 40, Color3.fromRGB(0, 170, 255))
 local btnSpeed = createButton("Speed Boost", 90, Color3.fromRGB(0, 200, 0))
 local btnJump = createButton("Jump Boost", 140, Color3.fromRGB(255, 170, 0))
@@ -193,7 +192,7 @@ mouse.Button1Down:Connect(function()
     end
 end)
 
--- Aimbot (по ближайшему игроку в 3D)
+-- Aimbot
 local aimOn = false
 btnAimbot.MouseButton1Click:Connect(function()
     aimOn = not aimOn
@@ -247,9 +246,8 @@ btnNoClip.MouseButton1Click:Connect(function()
     btnNoClip.BackgroundColor3 = noClipOn and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(150, 150, 150)
 end)
 
--- Обновлять NoClip при появлении персонажа (например, после респавна)
+-- Обновлять NoClip при респавне
 player.CharacterAdded:Connect(function(char)
-    -- Дождаться загрузки HumanoidRootPart
     char:WaitForChild("HumanoidRootPart", 10)
     if noClipOn then
         setNoClip(true)
