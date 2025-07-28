@@ -8,8 +8,8 @@ gui.ResetOnSpawn = false
 gui.Parent = game.CoreGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 430)
-frame.Position = UDim2.new(0.5, -150, 0.5, -215)
+frame.Size = UDim2.new(0, 300, 0, 470) -- увеличил высоту под новую кнопку
+frame.Position = UDim2.new(0.5, -150, 0.5, -235)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
 frame.Active = true
@@ -47,7 +47,7 @@ local RunService = game:GetService("RunService")
 
 local result = Instance.new("TextLabel")
 result.Size = UDim2.new(1, -40, 0, 30)
-result.Position = UDim2.new(0, 20, 0, 380)
+result.Position = UDim2.new(0, 20, 0, 430)
 result.Text = ""
 result.TextColor3 = Color3.new(1, 1, 1)
 result.BackgroundTransparency = 1
@@ -63,7 +63,9 @@ local btnPart = createButton("Create Part", 190, Color3.fromRGB(100, 100, 255))
 local btnESP = createButton("ESP", 240, Color3.fromRGB(255, 80, 80))
 local btnTP = createButton("Click TP", 290, Color3.fromRGB(255, 200, 0))
 local btnAimbot = createButton("Aimbot", 340, Color3.fromRGB(255, 100, 255))
+local btnNoClip = createButton("NoClip", 390, Color3.fromRGB(150, 150, 150))
 
+-- Fly
 local flying = false
 local bodyVel
 btnFly.MouseButton1Click:Connect(function()
@@ -104,6 +106,7 @@ btnFly.MouseButton1Click:Connect(function()
     end
 end)
 
+-- Speed Boost
 local speedOn = false
 btnSpeed.MouseButton1Click:Connect(function()
     local h = player.Character and player.Character:FindFirstChild("Humanoid")
@@ -114,6 +117,7 @@ btnSpeed.MouseButton1Click:Connect(function()
     result.Text = speedOn and "🚀 Speed Boost enabled" or "🐢 Speed Boost disabled"
 end)
 
+-- Jump Boost
 local jumpOn = false
 btnJump.MouseButton1Click:Connect(function()
     local h = player.Character and player.Character:FindFirstChild("Humanoid")
@@ -124,6 +128,7 @@ btnJump.MouseButton1Click:Connect(function()
     result.Text = jumpOn and "🦘 Jump Boost enabled" or "🦘 Jump Boost disabled"
 end)
 
+-- Create Part
 btnPart.MouseButton1Click:Connect(function()
     local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     if hrp then
@@ -136,6 +141,7 @@ btnPart.MouseButton1Click:Connect(function()
     end
 end)
 
+-- ESP
 local espOn = false
 btnESP.MouseButton1Click:Connect(function()
     espOn = not espOn
@@ -171,6 +177,7 @@ btnESP.MouseButton1Click:Connect(function()
     result.Text = espOn and "🔍 ESP enabled" or "❌ ESP disabled"
 end)
 
+-- Click TP
 local tpOn = false
 btnTP.MouseButton1Click:Connect(function()
     tpOn = not tpOn
@@ -186,6 +193,7 @@ mouse.Button1Down:Connect(function()
     end
 end)
 
+-- Aimbot (по ближайшему игроку в 3D)
 local aimOn = false
 btnAimbot.MouseButton1Click:Connect(function()
     aimOn = not aimOn
@@ -196,20 +204,54 @@ RunService.RenderStepped:Connect(function()
     local cam = workspace.CurrentCamera
     local closest = nil
     local minDist = math.huge
+    local char = player.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+    if not hrp then return end
+
     for _, p in pairs(game.Players:GetPlayers()) do
         if p ~= player and p.Character and p.Character:FindFirstChild("Head") then
-            local screenPos, onScreen = cam:WorldToScreenPoint(p.Character.Head.Position)
-            if onScreen then
-                local dist = (Vector2.new(screenPos.X, screenPos.Y) - Vector2.new(mouse.X, mouse.Y)).Magnitude
-                if dist < minDist then
-                    minDist = dist
-                    closest = p
-                end
+            local head = p.Character.Head
+            local dist = (head.Position - hrp.Position).Magnitude
+            if dist < minDist then
+                minDist = dist
+                closest = head
             end
         end
     end
-    if closest and closest.Character and closest.Character:FindFirstChild("Head") then
-        cam.CFrame = CFrame.new(cam.CFrame.Position, closest.Character.Head.Position)
+
+    if closest then
+        cam.CFrame = CFrame.new(cam.CFrame.Position, closest.Position)
     end
 end)
 
+-- NoClip
+local noClipOn = false
+
+local function setNoClip(state)
+    noClipOn = state
+    local char = player.Character
+    if not char then return end
+
+    for _, part in pairs(char:GetChildren()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.CanCollide = not state
+        end
+    end
+    result.Text = noClipOn and "🚫 NoClip enabled" or "✔️ NoClip disabled"
+end
+
+btnNoClip.MouseButton1Click:Connect(function()
+    noClipOn = not noClipOn
+    setNoClip(noClipOn)
+    btnNoClip.BackgroundColor3 = noClipOn and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(150, 150, 150)
+end)
+
+-- Обновлять NoClip при появлении персонажа (например, после респавна)
+player.CharacterAdded:Connect(function(char)
+    -- Дождаться загрузки HumanoidRootPart
+    char:WaitForChild("HumanoidRootPart", 10)
+    if noClipOn then
+        setNoClip(true)
+    end
+end)
