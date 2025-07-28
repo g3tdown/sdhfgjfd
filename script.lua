@@ -7,8 +7,8 @@ gui.ResetOnSpawn = false
 gui.Parent = game.CoreGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 500, 0, 450)
-frame.Position = UDim2.new(0.5, -150, 0.5, -225)
+frame.Size = UDim2.new(0, 400, 0, 550) -- увеличенный размер
+frame.Position = UDim2.new(0.5, -200, 0.5, -275) -- центр экрана
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
 frame.Active = true
@@ -22,18 +22,18 @@ titleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 titleBar.Text = "Cheat Hub"
 titleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleBar.Font = Enum.Font.SourceSansBold
-titleBar.TextSize = 20
+titleBar.TextSize = 22
 titleBar.Parent = frame
 
 local function createButton(text, y, color)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -40, 0, 40)
+    btn.Size = UDim2.new(1, -40, 0, 45) -- чуть выше кнопки
     btn.Position = UDim2.new(0, 20, 0, y)
     btn.Text = text
     btn.BackgroundColor3 = color
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.SourceSans
-    btn.TextSize = 18
+    btn.TextSize = 20
     btn.Parent = frame
     return btn
 end
@@ -44,25 +44,27 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 local result = Instance.new("TextLabel")
-result.Size = UDim2.new(1, -40, 0, 30)
-result.Position = UDim2.new(0, 20, 0, 410)
+result.Size = UDim2.new(1, -40, 0, 35)
+result.Position = UDim2.new(0, 20, 0, 510)
 result.Text = ""
 result.TextColor3 = Color3.new(1, 1, 1)
 result.BackgroundTransparency = 1
 result.Font = Enum.Font.SourceSansItalic
-result.TextSize = 18
+result.TextSize = 20
 result.TextXAlignment = Enum.TextXAlignment.Left
 result.Parent = frame
 
--- Создаем кнопки с позициями и цветами
-local btnFly = createButton("Fly", 40, Color3.fromRGB(0, 170, 255))
-local btnSpeed = createButton("Speed Boost", 90, Color3.fromRGB(0, 200, 0))
-local btnJump = createButton("Jump Boost", 140, Color3.fromRGB(255, 170, 0))
-local btnPart = createButton("Create Part", 190, Color3.fromRGB(100, 100, 255))
-local btnESP = createButton("ESP", 240, Color3.fromRGB(255, 80, 80))
-local btnTP = createButton("Click TP", 290, Color3.fromRGB(255, 200, 0))
-local btnAimbot = createButton("Aimbot", 340, Color3.fromRGB(255, 100, 255))
-local btnNoClip = createButton("NoClip", 390, Color3.fromRGB(150, 150, 150))
+-- Кнопки с позициями для увеличенного меню
+local btnFly = createButton("Fly", 50, Color3.fromRGB(0, 170, 255))
+local btnSpeed = createButton("Speed Boost", 105, Color3.fromRGB(0, 200, 0))
+local btnJump = createButton("Jump Boost", 160, Color3.fromRGB(255, 170, 0))
+local btnPart = createButton("Create Part", 215, Color3.fromRGB(100, 100, 255))
+local btnESP = createButton("ESP", 270, Color3.fromRGB(255, 80, 80))
+local btnTP = createButton("Click TP", 325, Color3.fromRGB(255, 200, 0))
+local btnAimbot = createButton("Aimbot", 380, Color3.fromRGB(255, 100, 255))
+local btnNoClip = createButton("NoClip", 435, Color3.fromRGB(150, 150, 150))
+
+-- Функции (тот же код, что и раньше)...
 
 -- Fly
 local flying = false
@@ -246,10 +248,33 @@ btnNoClip.MouseButton1Click:Connect(function()
     btnNoClip.BackgroundColor3 = noClipOn and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(150, 150, 150)
 end)
 
--- Обновлять NoClip при респавне
 player.CharacterAdded:Connect(function(char)
     char:WaitForChild("HumanoidRootPart", 10)
     if noClipOn then
         setNoClip(true)
     end
+end)
+
+-- Открытие/закрытие меню на кнопку O
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.O then
+        gui.Enabled = not gui.Enabled
+    end
+end)
+
+-- Ачивка при запуске скрипта
+local achiev = Instance.new("TextLabel")
+achiev.Size = UDim2.new(0, 300, 0, 50)
+achiev.Position = UDim2.new(0.5, -150, 0.1, 0)
+achiev.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+achiev.TextColor3 = Color3.new(1,1,1)
+achiev.Font = Enum.Font.SourceSansBold
+achiev.TextSize = 24
+achiev.Text = "Скрипт инжектнут успешно"
+achiev.BackgroundTransparency = 0.2
+achiev.Parent = gui
+
+delay(3, function()
+    achiev:Destroy()
 end)
